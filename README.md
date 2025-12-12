@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WaveCom Notification System - Frontend
 
-## Getting Started
+Modern, responsive web interface for managing and monitoring notifications built with Next.js 15 and TypeScript.
 
-First, run the development server:
+## Features
+
+- **Create Notifications** - Send email, SMS, and push notifications
+- **Real-time Monitoring** - Track notification status and delivery
+- **Smart Auto-refresh** - Optional polling with configurable intervals
+- **Manual Retry** - Re-send failed notifications with one click
+- **Clean UI** - Modern interface with Tailwind CSS
+- **Responsive Design** - Works on desktop and mobile devices
+
+## Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **HTTP Client**: Axios
+- **Date Formatting**: date-fns
+
+## Prerequisites
+
+- Node.js 18+
+- npm or yarn
+- Backend API running on `http://localhost:5000`
+
+## Installation
+
+1. Clone the repository
+
+```bash
+git clone <repository-url>
+cd wavecom-frontend
+```
+
+2. Install dependencies
+
+```bash
+npm install
+```
+
+3. Create `.env.local` file
+
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:5000
+```
+
+4. Start development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+````
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Available Scripts
 
-## Learn More
+```bash
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run start    # Start production server
+npm run lint     # Run ESLint
+````
 
-To learn more about Next.js, take a look at the following resources:
+## Features Overview
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Notification Creation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Support for multiple channels (Email, SMS, Push)
+- Optional subject line for emails
+- Form validation
+- Success/error feedback
 
-## Deploy on Vercel
+### Notification Monitoring
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Status filtering (All, Pending, Queued, Processing, Sent, Failed)
+- Real-time status updates
+- Delivery timestamps
+- Error details for failed notifications
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Smart Refresh
+
+- Auto-refresh toggle (off by default)
+- Configurable intervals (10s, 30s, 1min)
+- Pauses when browser tab is hidden
+- Manual refresh button
+
+### Retry Mechanism
+
+- Retry button on failed/pending notifications
+- Re-creates notification with same data
+- Console logging for debugging
+
+## Environment Variables
+
+| Variable              | Description     | Default                 |
+| --------------------- | --------------- | ----------------------- |
+| `NEXT_PUBLIC_API_URL` | Backend API URL | `http://localhost:3000` |
+
+## API Integration
+
+The frontend communicates with the backend via REST API:
+
+- `POST /api/notifications` - Create notification
+- `GET /api/notifications` - List notifications
+- `GET /api/notifications/:id` - Get single notification
