@@ -1,7 +1,14 @@
 import axios from "axios";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+if (!API_URL) {
+  console.warn("NEXT_PUBLIC_API_URL is not set — API calls will fail.");
+}
+
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: API_URL,
+  timeout: 10000,
   headers: {
     "Content-Type": "application/json",
   },
@@ -10,8 +17,14 @@ export const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error("API error", error?.response?.data ?? error.message);
+    const message =
+      error?.response?.data?.message ??
+      error?.response?.data?.error ??
+      error?.message ??
+      "Something went wrong";
 
-    return Promise.reject(error);
+    console.error("API error:", message, error?.response?.data ?? error);
+
+    return Promise.reject(new Error(message));
   },
 );

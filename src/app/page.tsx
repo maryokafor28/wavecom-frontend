@@ -1,14 +1,28 @@
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 
-export default async function Home() {
-  const response = await api.get("/health");
+export default function Home() {
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["health"],
+    queryFn: async () => {
+      const response = await api.get("/health");
+      return response.data;
+    },
+  });
+
+  if (isLoading) {
+    return <p>checking wavecom...</p>;
+  }
+  if (isError) {
+    return <p>Error: {error.message}</p>;
+  }
+
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <h1 className="text-2xl font-semibold text-foreground">WaveCom</h1>
-      <br /> <p className="font-mono text-foreground"></p>
-      Monospace text in JetBrains Mono{" "}
-      <p className="font-sans text-foreground">Body text in inter </p>
-      <p>{response.data.message}</p>
+    <main>
+      <h1>wavecom </h1>
+      <p>{data.message}</p>
     </main>
   );
 }
