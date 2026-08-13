@@ -19,8 +19,18 @@ export function setStorageRecipientId(id: string): void {
   if (!isBrowser()) return;
 
   try {
-    return window.localStorage.setItem(RECIPIENT_ID_KEY, id);
+    window.localStorage.setItem(RECIPIENT_ID_KEY, id);
   } catch (error) {
     console.error("failed to save recipeint ID to localstorage", error);
+  }
+}
+
+export function clearStoredRecipientId(): void {
+  if (!isBrowser()) return;
+
+  try {
+    window.localStorage.removeItem(RECIPIENT_ID_KEY);
+  } catch (error) {
+    console.error("failed to clear recipient Id from localStorage", error);
   }
 }

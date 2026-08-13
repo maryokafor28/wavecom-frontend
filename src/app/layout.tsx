@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import { SidebarProvider } from "@/components/layout/sidebar-context";
+import { Sidebar } from "@/components/layout/sidebar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -37,7 +39,14 @@ export default function RootLayout({
       className={`dark ${inter.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable}`}
     >
       <body>
-        <Providers>{children}</Providers>
+        <Providers>
+          <SidebarProvider>
+            <div className="flex h-screen">
+              <Sidebar recipientEmail={null} />
+              <main className="flex-1 overflow-y-auto">{children}</main>
+            </div>
+          </SidebarProvider>
+        </Providers>
       </body>
     </html>
   );
