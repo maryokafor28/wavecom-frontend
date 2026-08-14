@@ -10,6 +10,7 @@ import { Providers } from "./providers";
 import { SidebarProvider } from "@/components/layout/sidebar-context";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Navbar } from "@/components/layout/navbar";
+import { DemoBanner } from "@/components/layout/demo-banner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -60,6 +61,7 @@ export default function RootLayout({
                 <Navbar />
 
                 <main className="flex-1 overflow-y-auto">{children}</main>
+                <DemoBanner />
               </div>
             </div>
           </SidebarProvider>
