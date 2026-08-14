@@ -17,6 +17,7 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { clearStoredRecipientId } from "@/lib/recipient-storage";
 import { useSidebar } from "@/components/layout/sidebar-context";
@@ -62,7 +63,13 @@ function getInitial(email: string | null) {
   return email.trim().charAt(0).toUpperCase();
 }
 
-export function Sidebar({ recipientEmail }: { recipientEmail: string | null }) {
+export function Sidebar({
+  recipientEmail,
+  isLoading = false,
+}: {
+  recipientEmail: string | null;
+  isLoading?: boolean;
+}) {
   const [collapsed, setCollapsed] = useState(false);
   const { mobileOpen, closeMobile } = useSidebar();
   const pathname = usePathname();
@@ -99,16 +106,24 @@ export function Sidebar({ recipientEmail }: { recipientEmail: string | null }) {
         {/* Avatar / recipient */}
         <div className="flex items-center justify-between px-4 py-4">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sidebar-accent text-sm font-medium text-sidebar-accent-foreground">
-              {getInitial(recipientEmail)}
-            </div>
-
-            {!collapsed && (
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-sidebar-foreground">
-                  {recipientEmail ?? "Guest"}
-                </p>
-              </div>
+            {isLoading ? (
+              <>
+                <Skeleton className="h-9 w-9 shrink-0 rounded-full" />
+                {!collapsed && <Skeleton className="h-4 w-28" />}
+              </>
+            ) : (
+              <>
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sidebar-accent text-sm font-medium text-sidebar-accent-foreground">
+                  {getInitial(recipientEmail)}
+                </div>
+                {!collapsed && (
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-sidebar-foreground">
+                      {recipientEmail ?? "Guest"}
+                    </p>
+                  </div>
+                )}
+              </>
             )}
           </div>
 

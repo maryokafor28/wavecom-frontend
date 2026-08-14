@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import {
+  Inter,
+  JetBrains_Mono,
+  Space_Grotesk,
+  Lobster_Two,
+} from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { SidebarProvider } from "@/components/layout/sidebar-context";
 import { Sidebar } from "@/components/layout/sidebar";
+import { Navbar } from "@/components/layout/navbar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,6 +28,11 @@ const spaceGrotesk = Space_Grotesk({
   variable: "--font-heading",
   display: "swap",
 });
+const lobster = Lobster_Two({
+  subsets: ["latin"],
+  variable: "--font-lobster",
+  weight: ["400", "700"],
+});
 
 export const metadata: Metadata = {
   title: "WaveCom",
@@ -36,14 +47,20 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${inter.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable}`}
+      suppressHydrationWarning
+      className={`${inter.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} ${lobster.variable}`}
     >
       <body>
         <Providers>
           <SidebarProvider>
             <div className="flex h-screen">
               <Sidebar recipientEmail={null} />
-              <main className="flex-1 overflow-y-auto">{children}</main>
+
+              <div className="flex flex-1 flex-col overflow-hidden">
+                <Navbar />
+
+                <main className="flex-1 overflow-y-auto">{children}</main>
+              </div>
             </div>
           </SidebarProvider>
         </Providers>
