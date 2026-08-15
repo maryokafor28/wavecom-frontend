@@ -15,12 +15,14 @@ import {
   ChevronRight,
   RotateCcw,
   X,
+  UserRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { clearStoredRecipientId } from "@/lib/recipient-storage";
+import { clearAllIdentification } from "@/lib/recipient-storage";
 import { useSidebar } from "@/components/layout/sidebar-context";
+import { useRecipient } from "@/components/layout/recipient-context";
 
 type NavItem = {
   label: string;
@@ -63,19 +65,16 @@ function getInitial(email: string | null) {
   return email.trim().charAt(0).toUpperCase();
 }
 
-export function Sidebar({
-  recipientEmail,
-  isLoading = false,
-}: {
-  recipientEmail: string | null;
-  isLoading?: boolean;
-}) {
+export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const { mobileOpen, closeMobile } = useSidebar();
+  const { recipient, isLoading, dataScope, toggleDataScope } = useRecipient();
   const pathname = usePathname();
 
+  const recipientEmail = recipient?.email ?? null;
+  console.log("sidebar recipient:", recipient, "isLoading:", isLoading);
   function handleReset() {
-    clearStoredRecipientId();
+    clearAllIdentification();
     window.location.reload();
   }
 
@@ -138,6 +137,38 @@ export function Sidebar({
             <X className="h-4 w-4" />
           </Button>
         </div>
+
+        {/* My Data / All Data toggle — only for identified visitors */}
+        {!collapsed && recipientEmail && (
+          <div className="px-4 pb-3">
+            <div className="flex items-center rounded-lg border border-sidebar-border bg-sidebar-accent/30 p-0.5 text-xs">
+              <button
+                onClick={toggleDataScope}
+                className={cn(
+                  "flex flex-1 items-center justify-center gap-1.5 rounded-md py-1.5 transition-colors",
+                  dataScope === "mine"
+                    ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                    : "text-muted-foreground hover:text-sidebar-foreground",
+                )}
+              >
+                <UserRound className="h-3.5 w-3.5" />
+                My Data
+              </button>
+              <button
+                onClick={toggleDataScope}
+                className={cn(
+                  "flex flex-1 items-center justify-center gap-1.5 rounded-md py-1.5 transition-colors",
+                  dataScope === "all"
+                    ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                    : "text-muted-foreground hover:text-sidebar-foreground",
+                )}
+              >
+                <Users className="h-3.5 w-3.5" />
+                All Data
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="border-t border-sidebar-border" />
 

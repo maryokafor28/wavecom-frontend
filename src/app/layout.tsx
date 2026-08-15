@@ -7,6 +7,8 @@ import {
 } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import { RecipientProvider } from "@/components/layout/recipient-context";
+import { IdentificationModal } from "@/components/layout/identification-modal";
 import { SidebarProvider } from "@/components/layout/sidebar-context";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Navbar } from "@/components/layout/navbar";
@@ -53,18 +55,21 @@ export default function RootLayout({
     >
       <body>
         <Providers>
-          <SidebarProvider>
-            <div className="flex h-screen">
-              <Sidebar recipientEmail={null} />
+          <RecipientProvider>
+            <IdentificationModal />
 
-              <div className="flex flex-1 flex-col overflow-hidden">
-                <Navbar />
+            <SidebarProvider>
+              <div className="flex h-screen">
+                <Sidebar />
+                <div className="flex flex-1 flex-col overflow-hidden">
+                  <Navbar />
 
-                <main className="flex-1 overflow-y-auto">{children}</main>
-                <DemoBanner />
+                  <main className="flex-1 overflow-y-auto">{children}</main>
+                  <DemoBanner />
+                </div>
               </div>
-            </div>
-          </SidebarProvider>
+            </SidebarProvider>
+          </RecipientProvider>
         </Providers>
       </body>
     </html>
