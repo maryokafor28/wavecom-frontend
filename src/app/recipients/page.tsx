@@ -1,10 +1,12 @@
-import { PagePlaceholder } from "@/components/layout/page-placeholder";
+import { RecipientsTable } from "@/components/recipients/recipients-table";
 
 export default function RecipientsPage() {
   return (
-    <PagePlaceholder
-      title="Recipients"
-      description="List, detail, and actions coming in Phase 4."
-    />
+    <main className="p-6">
+      <h1 className="text-2xl font-semibold text-foreground">Recipients</h1>
+      <div className="mt-6">
+        <RecipientsTable />
+      </div>
+    </main>
   );
 }

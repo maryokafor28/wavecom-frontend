@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, MessageSquare, Bell, Send } from "lucide-react";
+import { Mail, MessageSquare, Bell } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -190,7 +190,6 @@ export function QuickSendSheet({
             className="w-full justify-center gap-2 rounded-full"
           >
             {isPending ? "Sending..." : "Send Notification"}
-            {!isPending && <Send className="h-4 w-4" />}
           </Button>
         </form>
       </SheetContent>
