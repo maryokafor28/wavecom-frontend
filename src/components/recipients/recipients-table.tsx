@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRecipients, type Recipient } from "@/hooks/use-recipients";
 import { useCanDeleteRecipient } from "@/hooks/use-recipient-permission";
@@ -16,7 +17,11 @@ import { DeleteRecipientDialog } from "@/components/recipients/delete-recipient-
 
 export function RecipientsTable() {
   const router = useRouter();
-  const { data: recipients, isLoading } = useRecipients();
+  const [page, setPage] = useState(1);
+  const { data: response, isLoading } = useRecipients(page);
+  const recipients = response?.data;
+  const pagination = response?.pagination;
+
   const [search, setSearch] = useState("");
   const [pendingDelete, setPendingDelete] = useState<Recipient | null>(null);
 
@@ -136,6 +141,33 @@ export function RecipientsTable() {
           </tbody>
         </table>
       </div>
+
+      {pagination && pagination.totalPages > 1 && (
+        <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
+          <span>
+            Page {pagination.page} of {pagination.totalPages} (
+            {pagination.total} total)
+          </span>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page <= 1}
+              onClick={() => setPage((p) => p - 1)}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page >= pagination.totalPages}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
 
       <DeleteRecipientDialog
         recipient={pendingDelete}

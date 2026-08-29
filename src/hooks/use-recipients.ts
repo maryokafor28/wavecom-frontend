@@ -10,17 +10,27 @@ export type Recipient = {
   createdAt: string;
 };
 
+type Pagination = {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+};
+
 type RecipientsResponse = {
   status: string;
   data: Recipient[];
+  pagination: Pagination;
 };
 
-export function useRecipients() {
+export function useRecipients(page: number, limit: number = 10) {
   return useQuery({
-    queryKey: ["recipients"],
+    queryKey: ["recipients", page, limit],
     queryFn: async () => {
-      const res = await api.get<RecipientsResponse>("/api/recipients");
-      return res.data.data;
+      const res = await api.get<RecipientsResponse>("/api/recipients", {
+        params: { page, limit },
+      });
+      return res.data;
     },
   });
 }

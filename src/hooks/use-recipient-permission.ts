@@ -1,6 +1,6 @@
 import { useRecipient } from "@/components/layout/recipient-context";
 import { OWNER_EMAIL } from "@/lib/constants";
-import type { Recipient } from "@/hooks/use-recipients";
+import type { Recipient } from "@/hooks/use-recipient";
 
 export function useCanDeleteRecipient() {
   const { recipientId: currentRecipientId, recipient: currentRecipient } =

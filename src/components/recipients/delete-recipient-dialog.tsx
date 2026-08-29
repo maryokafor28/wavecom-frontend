@@ -11,7 +11,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useDeleteRecipient } from "@/hooks/use-delete-recipient";
-import type { Recipient } from "@/hooks/use-recipients";
+import type { Recipient } from "@/hooks/use-recipient";
 
 export function DeleteRecipientDialog({
   recipient,

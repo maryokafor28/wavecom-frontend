@@ -5,6 +5,7 @@ export type Recipient = {
   id: string;
   name: string;
   email: string;
+  phone?: string;
   preferredChannel: string;
   createdAt: string;
 };
