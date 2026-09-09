@@ -13,9 +13,8 @@ export function DemoBanner() {
     >
       <Info className="h-3.5 w-3.5 shrink-0" />
       <p>
-        Portfolio Demo — Authentication is intentionally omitted. Recipient
-        identity is stored locally in your browser. See Configuration for live
-        status.
+        Authentication is intentionally omitted. Recipient identity is stored
+        locally in your browser. See Configuration for live status.
       </p>
     </motion.footer>
   );

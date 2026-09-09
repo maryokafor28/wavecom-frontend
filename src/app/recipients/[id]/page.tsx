@@ -6,6 +6,9 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRecipientQuery } from "@/hooks/use-recipient";
+import { RecipientOverview } from "@/components/recipients/recipient-overview";
+import { RecipientHistory } from "@/components/recipients/recipient-history";
+import { RecipientTimeline } from "@/components/recipients/recipient-timeline";
 import { cn } from "@/lib/utils";
 
 type Tab = "overview" | "history" | "timeline" | "analytics" | "actions";
@@ -76,14 +79,14 @@ export default function RecipientDetailPage() {
       </div>
 
       <div className="mt-6">
-        {activeTab === "overview" && (
-          <p className="text-muted-foreground">Overview content coming next.</p>
+        {activeTab === "overview" && recipient && (
+          <RecipientOverview recipient={recipient} />
         )}
-        {activeTab === "history" && (
-          <p className="text-muted-foreground">History content coming soon.</p>
+        {activeTab === "history" && recipient && (
+          <RecipientHistory recipientId={recipient.id} />
         )}
-        {activeTab === "timeline" && (
-          <p className="text-muted-foreground">Timeline content coming soon.</p>
+        {activeTab === "timeline" && recipient && (
+          <RecipientTimeline recipientId={recipient.id} />
         )}
         {activeTab === "analytics" && (
           <p className="text-muted-foreground">
