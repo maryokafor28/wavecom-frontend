@@ -10,6 +10,7 @@ import { RecipientOverview } from "@/components/recipients/recipient-overview";
 import { RecipientHistory } from "@/components/recipients/recipient-history";
 import { RecipientTimeline } from "@/components/recipients/recipient-timeline";
 import { cn } from "@/lib/utils";
+import { RecipientAnalytics } from "@/components/recipients/recipient-analytics";
 
 type Tab = "overview" | "history" | "timeline" | "analytics" | "actions";
 
@@ -88,10 +89,8 @@ export default function RecipientDetailPage() {
         {activeTab === "timeline" && recipient && (
           <RecipientTimeline recipientId={recipient.id} />
         )}
-        {activeTab === "analytics" && (
-          <p className="text-muted-foreground">
-            Analytics content coming soon.
-          </p>
+        {activeTab === "analytics" && recipient && (
+          <RecipientAnalytics recipientId="={recipient.id}" />
         )}
         {activeTab === "actions" && (
           <p className="text-muted-foreground">Actions content coming soon.</p>

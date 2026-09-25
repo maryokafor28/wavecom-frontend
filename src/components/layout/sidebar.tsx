@@ -72,7 +72,6 @@ export function Sidebar() {
   const pathname = usePathname();
 
   const recipientEmail = recipient?.email ?? null;
-  console.log("sidebar recipient:", recipient, "isLoading:", isLoading);
   function handleReset() {
     clearAllIdentification();
     window.location.reload();
