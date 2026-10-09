@@ -8,6 +8,7 @@ type CreateNotificationInput = {
   channel: NotificationChannel;
   message: string;
   subject?: string;
+  recipientId?: string;
 };
 
 type Notification = {
@@ -38,6 +39,8 @@ export function useCreateNotification() {
     onSuccess: () => {
       // Dashboard stat cards should reflect the new notification immediately.
       queryClient.invalidateQueries({ queryKey: ["notification-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notification-analytics"] });
     },
   });
 }

@@ -1,9 +1,13 @@
 "use client";
 
-import { Mail, Phone, Radio, Bell } from "lucide-react";
+import { useState } from "react";
+import { Mail, Phone, Radio, Bell, Pencil } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { useNotifications } from "@/hooks/use-notifications";
 import { useNotificationStats } from "@/hooks/use-notification-stats";
+import { useCanEditRecipient } from "@/hooks/use-recipient-permission";
+import { EditRecipientSheet } from "@/components/recipients/edit-recipient-sheet";
 import type { Recipient } from "@/hooks/use-recipient";
 
 function formatRelativeTime(dateString: string) {
@@ -20,6 +24,10 @@ function formatRelativeTime(dateString: string) {
 }
 
 export function RecipientOverview({ recipient }: { recipient: Recipient }) {
+  const [editOpen, setEditOpen] = useState(false);
+  const [editSession, setEditSession] = useState(0);
+  const canEdit = useCanEditRecipient();
+
   const { data: notificationsData, isLoading: lastNotifLoading } =
     useNotifications({ recipientId: recipient.id, limit: 1 });
 
@@ -33,9 +41,26 @@ export function RecipientOverview({ recipient }: { recipient: Recipient }) {
     <div className="space-y-6">
       {/* Basic info */}
       <div className="rounded-xl border border-border bg-card p-5">
-        <h3 className="text-sm font-medium text-muted-foreground">
-          Basic Info
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium text-muted-foreground">
+            Basic Info
+          </h3>
+
+          {canEdit(recipient) && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => {
+                setEditSession((s) => s + 1);
+                setEditOpen(true);
+              }}
+            >
+              <Pencil className="h-3.5 w-3.5" />
+              Edit
+            </Button>
+          )}
+        </div>
 
         <dl className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="flex items-center gap-2">
@@ -132,6 +157,13 @@ export function RecipientOverview({ recipient }: { recipient: Recipient }) {
           </div>
         </dl>
       </div>
+
+      <EditRecipientSheet
+        key={editSession}
+        open={editOpen}
+        onOpenChangeAction={setEditOpen}
+        recipient={recipient}
+      />
     </div>
   );
 }

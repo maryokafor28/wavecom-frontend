@@ -12,3 +12,14 @@ export function useCanDeleteRecipient() {
     return recipient.id === currentRecipientId || isOwnerViewer;
   };
 }
+
+export function useCanEditRecipient() {
+  const { recipientId: currentRecipientId, recipient: currentRecipient } =
+    useRecipient();
+
+  const isOwnerViewer = currentRecipient?.email === OWNER_EMAIL;
+
+  return function canEdit(recipient: Recipient) {
+    return recipient.id === currentRecipientId || isOwnerViewer;
+  };
+}
