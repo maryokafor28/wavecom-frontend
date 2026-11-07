@@ -1,41 +1,63 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { Mail, Phone, Radio, Bell, Pencil } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import { useNotifications } from "@/hooks/use-notifications";
-import { useNotificationStats } from "@/hooks/use-notification-stats";
-import { useCanEditRecipient } from "@/hooks/use-recipient-permission";
-import { EditRecipientSheet } from "@/components/recipients/edit-recipient-sheet";
-import type { Recipient } from "@/hooks/use-recipient";
+import { useState } from 'react'
+import { Mail, Phone, Radio, Bell, Pencil, Trash2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
+import { useNotifications } from '@/hooks/use-notifications'
+import { useNotificationStats } from '@/hooks/use-notification-stats'
+import {
+  useCanEditRecipient,
+  useCanDeleteRecipient,
+} from '@/hooks/use-recipient-permission'
+import { EditRecipientSheet } from '@/components/recipients/edit-recipient-sheet'
+import type { Recipient } from '@/hooks/use-recipient'
+import { useRecipient } from '@/components/layout/recipient-context'
+import { clearAllIdentification } from '@/lib/recipient-storage'
+import { DeleteRecipientDialog } from '@/components/recipients/delete-recipient-dialog'
 
 function formatRelativeTime(dateString: string) {
-  const date = new Date(dateString);
-  const diffMs = Date.now() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
+  const date = new Date(dateString)
+  const diffMs = Date.now() - date.getTime()
+  const diffMins = Math.floor(diffMs / 60000)
 
-  if (diffMins < 1) return "just now";
-  if (diffMins < 60) return `${diffMins}m ago`;
-  const diffHours = Math.floor(diffMins / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
-  const diffDays = Math.floor(diffHours / 24);
-  return `${diffDays}d ago`;
+  if (diffMins < 1) return 'just now'
+  if (diffMins < 60) return `${diffMins}m ago`
+  const diffHours = Math.floor(diffMins / 60)
+  if (diffHours < 24) return `${diffHours}h ago`
+  const diffDays = Math.floor(diffHours / 24)
+  return `${diffDays}d ago`
 }
 
 export function RecipientOverview({ recipient }: { recipient: Recipient }) {
-  const [editOpen, setEditOpen] = useState(false);
-  const [editSession, setEditSession] = useState(0);
-  const canEdit = useCanEditRecipient();
+  const [editOpen, setEditOpen] = useState(false)
+  const [editSession, setEditSession] = useState(0)
+  const canEdit = useCanEditRecipient()
 
   const { data: notificationsData, isLoading: lastNotifLoading } =
-    useNotifications({ recipientId: recipient.id, limit: 1 });
+    useNotifications({ recipientId: recipient.id, limit: 1 })
 
   const { data: stats, isLoading: statsLoading } = useNotificationStats(
     recipient.id,
-  );
+  )
 
-  const lastNotification = notificationsData?.notifications?.[0];
+  const lastNotification = notificationsData?.notifications?.[0]
+  const router = useRouter()
+  const { recipientId: currentRecipientId } = useRecipient()
+  const canDelete = useCanDeleteRecipient()
+  const [pendingDelete, setPendingDelete] = useState<Recipient | null>(null)
+
+  function handleDeleted() {
+    if (recipient.id === currentRecipientId) {
+      // They deleted their own profile: clear the stored identity and do a full
+      // reload so the context re-reads storage and the identification modal returns.
+      clearAllIdentification()
+      window.location.assign('/recipients')
+      return
+    }
+    router.push('/recipients')
+  }
 
   return (
     <div className="space-y-6">
@@ -52,12 +74,24 @@ export function RecipientOverview({ recipient }: { recipient: Recipient }) {
               size="sm"
               className="gap-2"
               onClick={() => {
-                setEditSession((s) => s + 1);
-                setEditOpen(true);
+                setEditSession((s) => s + 1)
+                setEditOpen(true)
               }}
             >
               <Pencil className="h-3.5 w-3.5" />
               Edit
+            </Button>
+          )}
+
+          {canDelete(recipient) && (
+            <Button
+              variant="destructive"
+              size="sm"
+              className="gap-2"
+              onClick={() => setPendingDelete(recipient)}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              Delete
             </Button>
           )}
         </div>
@@ -76,7 +110,7 @@ export function RecipientOverview({ recipient }: { recipient: Recipient }) {
             <div>
               <dt className="text-xs text-muted-foreground">Phone</dt>
               <dd className="text-sm text-foreground">
-                {recipient.phone || "Not set"}
+                {recipient.phone || 'Not set'}
               </dd>
             </div>
           </div>
@@ -116,7 +150,7 @@ export function RecipientOverview({ recipient }: { recipient: Recipient }) {
               <dd className="mt-1 text-sm font-medium text-foreground">
                 {lastNotification
                   ? formatRelativeTime(lastNotification.createdAt)
-                  : "—"}
+                  : '—'}
               </dd>
             )}
           </div>
@@ -127,7 +161,7 @@ export function RecipientOverview({ recipient }: { recipient: Recipient }) {
               <Skeleton className="mt-1 h-5 w-16" />
             ) : (
               <dd className="mt-1 text-sm font-medium capitalize text-foreground">
-                {lastNotification?.status ?? "—"}
+                {lastNotification?.status ?? '—'}
               </dd>
             )}
           </div>
@@ -164,6 +198,12 @@ export function RecipientOverview({ recipient }: { recipient: Recipient }) {
         onOpenChangeAction={setEditOpen}
         recipient={recipient}
       />
+
+      <DeleteRecipientDialog
+        recipient={pendingDelete}
+        onOpenChangeAction={(open) => !open && setPendingDelete(null)}
+        onDeletedAction={handleDeleted}
+      />
     </div>
-  );
+  )
 }

@@ -1,44 +1,44 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Search, MoreVertical } from "lucide-react";
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Search, MoreVertical } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useRecipients, type Recipient } from "@/hooks/use-recipients";
-import { useCanDeleteRecipient } from "@/hooks/use-recipient-permission";
-import { DeleteRecipientDialog } from "@/components/recipients/delete-recipient-dialog";
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useRecipients, type Recipient } from '@/hooks/use-recipients'
+import { useCanDeleteRecipient } from '@/hooks/use-recipient-permission'
+import { DeleteRecipientDialog } from '@/components/recipients/delete-recipient-dialog'
 
 export function RecipientsTable() {
-  const router = useRouter();
-  const [page, setPage] = useState(1);
-  const { data: response, isLoading } = useRecipients(page);
-  const recipients = response?.data;
-  const pagination = response?.pagination;
+  const router = useRouter()
+  const [page, setPage] = useState(1)
+  const { data: response, isLoading } = useRecipients(page)
+  const recipients = response?.data
+  const pagination = response?.pagination
 
-  const [search, setSearch] = useState("");
-  const [pendingDelete, setPendingDelete] = useState<Recipient | null>(null);
+  const [search, setSearch] = useState('')
+  const [pendingDelete, setPendingDelete] = useState<Recipient | null>(null)
 
-  const canDelete = useCanDeleteRecipient();
+  const canDelete = useCanDeleteRecipient()
 
   const filtered = recipients?.filter((r) => {
-    const q = search.trim().toLowerCase();
-    if (!q) return true;
-    return (
-      r.name.toLowerCase().includes(q) || r.email.toLowerCase().includes(q)
-    );
-  });
+    const q = search.trim().toLowerCase()
+    if (!q) return true
+    return r.name.toLowerCase().includes(q) || r.email.toLowerCase().includes(q)
+  })
 
   function goToDetail(id: string) {
-    router.push(`/recipients/${id}`);
+    router.push(`/recipients/${id}`)
   }
-
+  function goToActions(id: string) {
+    router.push(`/recipients/${id}?tab=actions`)
+  }
   return (
     <div>
       <div className="flex items-center gap-2 rounded-lg border border-input bg-background px-3 py-2 sm:max-w-xs">
@@ -120,7 +120,7 @@ export function RecipientsTable() {
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-xs"
-                          onClick={() => goToDetail(recipient.id)}
+                          onClick={() => goToActions(recipient.id)}
                         >
                           Send Notification
                         </DropdownMenuItem>
@@ -174,5 +174,5 @@ export function RecipientsTable() {
         onOpenChangeAction={(open) => !open && setPendingDelete(null)}
       />
     </div>
-  );
+  )
 }

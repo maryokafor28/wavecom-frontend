@@ -1,8 +1,8 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useState } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
   Users,
@@ -16,69 +16,78 @@ import {
   RotateCcw,
   X,
   UserRound,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
-import { clearAllIdentification } from "@/lib/recipient-storage";
-import { useSidebar } from "@/components/layout/sidebar-context";
-import { useRecipient } from "@/components/layout/recipient-context";
+  UserPlus,
+} from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+import { cn } from '@/lib/utils'
+import { clearAllIdentification } from '@/lib/recipient-storage'
+import { useSidebar } from '@/components/layout/sidebar-context'
+import { useRecipient } from '@/components/layout/recipient-context'
 
 type NavItem = {
-  label: string;
-  href: string;
-  icon: React.ElementType;
-};
+  label: string
+  href: string
+  icon: React.ElementType
+}
 
 type NavGroup = {
-  label: string;
-  items: NavItem[];
-};
+  label: string
+  items: NavItem[]
+}
 
 const NAV_GROUPS: NavGroup[] = [
   {
-    label: "Overview",
+    label: 'Overview',
     items: [
-      { label: "Dashboard", href: "/", icon: LayoutDashboard },
-      { label: "Recipients", href: "/recipients", icon: Users },
+      { label: 'Dashboard', href: '/', icon: LayoutDashboard },
+      { label: 'Recipients', href: '/recipients', icon: Users },
     ],
   },
   {
-    label: "Monitoring",
+    label: 'Monitoring',
     items: [
-      { label: "Notification Feed", href: "/feed", icon: Activity },
-      { label: "Queue Monitor", href: "/queue", icon: ListOrdered },
-      { label: "Analytics", href: "/analytics", icon: BarChart3 },
+      { label: 'Notification Feed', href: '/feed', icon: Activity },
+      { label: 'Queue Monitor', href: '/queue', icon: ListOrdered },
+      { label: 'Analytics', href: '/analytics', icon: BarChart3 },
     ],
   },
   {
-    label: "System",
+    label: 'System',
     items: [
-      { label: "Event Log", href: "/events", icon: ScrollText },
-      { label: "Configuration", href: "/configuration", icon: Settings },
+      { label: 'Event Log', href: '/events', icon: ScrollText },
+      { label: 'Configuration', href: '/configuration', icon: Settings },
     ],
   },
-];
+]
 
 function getInitial(email: string | null) {
-  if (!email) return "?";
-  return email.trim().charAt(0).toUpperCase();
+  if (!email) return '?'
+  return email.trim().charAt(0).toUpperCase()
 }
 
 export function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false);
-  const { mobileOpen, closeMobile } = useSidebar();
-  const { recipient, isLoading, dataScope, toggleDataScope } = useRecipient();
-  const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false)
+  const { mobileOpen, closeMobile } = useSidebar()
+  const {
+    recipient,
+    isLoading,
+    dataScope,
+    toggleDataScope,
+    isGuest,
+    requireIdentification,
+  } = useRecipient()
+  const pathname = usePathname()
 
-  const recipientEmail = recipient?.email ?? null;
+  const recipientEmail = recipient?.email ?? null
+
   function handleReset() {
-    clearAllIdentification();
-    window.location.reload();
+    clearAllIdentification()
+    window.location.reload()
   }
 
   function handleNavigation() {
-    closeMobile();
+    closeMobile()
   }
 
   return (
@@ -94,11 +103,11 @@ export function Sidebar() {
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex h-screen flex-col border-r border-sidebar-border bg-sidebar transition-all duration-200",
-          "md:static md:z-auto",
-          collapsed ? "md:w-16" : "md:w-60",
-          mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
-          "w-60",
+          'fixed inset-y-0 left-0 z-50 flex h-screen flex-col border-r border-sidebar-border bg-sidebar transition-all duration-200',
+          'md:static md:z-auto',
+          collapsed ? 'md:w-16' : 'md:w-60',
+          mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
+          'w-60',
         )}
       >
         {/* Avatar / recipient */}
@@ -117,7 +126,7 @@ export function Sidebar() {
                 {!collapsed && (
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-sidebar-foreground">
-                      {recipientEmail ?? "Guest"}
+                      {recipientEmail ?? 'Guest'}
                     </p>
                   </div>
                 )}
@@ -144,10 +153,10 @@ export function Sidebar() {
               <button
                 onClick={toggleDataScope}
                 className={cn(
-                  "flex flex-1 items-center justify-center gap-1.5 rounded-md py-1.5 transition-colors",
-                  dataScope === "mine"
-                    ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                    : "text-muted-foreground hover:text-sidebar-foreground",
+                  'flex flex-1 items-center justify-center gap-1.5 rounded-md py-1.5 transition-colors',
+                  dataScope === 'mine'
+                    ? 'bg-sidebar-primary text-sidebar-primary-foreground'
+                    : 'text-muted-foreground hover:text-sidebar-foreground',
                 )}
               >
                 <UserRound className="h-3.5 w-3.5" />
@@ -156,10 +165,10 @@ export function Sidebar() {
               <button
                 onClick={toggleDataScope}
                 className={cn(
-                  "flex flex-1 items-center justify-center gap-1.5 rounded-md py-1.5 transition-colors",
-                  dataScope === "all"
-                    ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                    : "text-muted-foreground hover:text-sidebar-foreground",
+                  'flex flex-1 items-center justify-center gap-1.5 rounded-md py-1.5 transition-colors',
+                  dataScope === 'all'
+                    ? 'bg-sidebar-primary text-sidebar-primary-foreground'
+                    : 'text-muted-foreground hover:text-sidebar-foreground',
                 )}
               >
                 <Users className="h-3.5 w-3.5" />
@@ -186,8 +195,8 @@ export function Sidebar() {
 
                 <ul className="space-y-0.5">
                   {group.items.map((item) => {
-                    const isActive = pathname === item.href;
-                    const Icon = item.icon;
+                    const isActive = pathname === item.href
+                    const Icon = item.icon
 
                     return (
                       <li key={item.href}>
@@ -196,9 +205,9 @@ export function Sidebar() {
                           variant="ghost"
                           onClick={handleNavigation}
                           className={cn(
-                            "h-auto w-full justify-start gap-3 px-2 py-2 text-sm font-normal",
+                            'h-auto w-full justify-start gap-3 px-2 py-2 text-sm font-normal',
                             isActive &&
-                              "bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary hover:text-sidebar-primary-foreground",
+                              'bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary hover:text-sidebar-primary-foreground',
                           )}
                         >
                           <Link
@@ -211,7 +220,7 @@ export function Sidebar() {
                           </Link>
                         </Button>
                       </li>
-                    );
+                    )
                   })}
                 </ul>
               </div>
@@ -223,22 +232,35 @@ export function Sidebar() {
 
         {/* Footer */}
         <div className="flex flex-col gap-1 p-3">
-          <Button
-            variant="ghost"
-            onClick={handleReset}
-            title={collapsed ? "Not you? Reset" : undefined}
-            className="h-auto w-full justify-start gap-3 px-2 py-2 text-sm font-normal text-muted-foreground"
-          >
-            <RotateCcw className="h-4 w-4 shrink-0" />
+          {isGuest ? (
+            <Button
+              variant="ghost"
+              onClick={requireIdentification}
+              title={collapsed ? 'Add your details' : undefined}
+              className="h-auto w-full justify-start gap-3 px-2 py-2 text-sm font-normal text-primary"
+            >
+              <UserPlus className="h-4 w-4 shrink-0" />
 
-            {!collapsed && <span>Not you? Reset</span>}
-          </Button>
+              {!collapsed && <span>Add your details</span>}
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              onClick={handleReset}
+              title={collapsed ? 'Not you? Reset' : undefined}
+              className="h-auto w-full justify-start gap-3 px-2 py-2 text-sm font-normal text-muted-foreground"
+            >
+              <RotateCcw className="h-4 w-4 shrink-0" />
+
+              {!collapsed && <span>Not you? Reset</span>}
+            </Button>
+          )}
 
           {/* Desktop collapse button */}
           <Button
             variant="ghost"
             onClick={() => setCollapsed((c) => !c)}
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             className="hidden h-auto w-full justify-start gap-3 px-2 py-2 text-sm font-normal text-muted-foreground md:flex"
           >
             {collapsed ? (
@@ -253,5 +275,5 @@ export function Sidebar() {
         </div>
       </aside>
     </>
-  );
+  )
 }
