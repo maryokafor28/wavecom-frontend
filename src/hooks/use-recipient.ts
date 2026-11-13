@@ -6,6 +6,7 @@ export type Recipient = {
   name: string;
   email: string;
   phone?: string;
+  hasPushToken?: boolean;
   preferredChannel: string;
   createdAt: string;
 };

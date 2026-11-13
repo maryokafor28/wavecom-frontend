@@ -7,12 +7,11 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { useNotifications } from '@/hooks/use-notifications'
 import { useNotificationStats } from '@/hooks/use-notification-stats'
-import {
-  useCanEditRecipient,
-  useCanDeleteRecipient,
-} from '@/hooks/use-recipient-permission'
+import { useCanEditRecipient, useCanDeleteRecipient, } from '@/hooks/use-recipient-permission'
+import { usePushRegistration } from '@/hooks/use-push-registration'
 import { EditRecipientSheet } from '@/components/recipients/edit-recipient-sheet'
 import type { Recipient } from '@/hooks/use-recipient'
+import { useDisablePush } from '@/hooks/use-disable-push'
 import { useRecipient } from '@/components/layout/recipient-context'
 import { clearAllIdentification } from '@/lib/recipient-storage'
 import { DeleteRecipientDialog } from '@/components/recipients/delete-recipient-dialog'
@@ -31,9 +30,26 @@ function formatRelativeTime(dateString: string) {
 }
 
 export function RecipientOverview({ recipient }: { recipient: Recipient }) {
+  const router = useRouter()
   const [editOpen, setEditOpen] = useState(false)
   const [editSession, setEditSession] = useState(0)
+  const [pendingDelete, setPendingDelete] = useState<Recipient | null>(null)
+
   const canEdit = useCanEditRecipient()
+  const canDelete = useCanDeleteRecipient()
+  const { recipientId: currentRecipientId } = useRecipient()
+
+  const {
+    mutate: enablePush,
+    isPending: pushPending,
+    error: pushError,
+  } = usePushRegistration(recipient.id)
+
+  const {
+  mutate: disablePush,
+  isPending: disablePending,
+  error: disableError,
+} = useDisablePush(recipient.id)
 
   const { data: notificationsData, isLoading: lastNotifLoading } =
     useNotifications({ recipientId: recipient.id, limit: 1 })
@@ -43,10 +59,10 @@ export function RecipientOverview({ recipient }: { recipient: Recipient }) {
   )
 
   const lastNotification = notificationsData?.notifications?.[0]
-  const router = useRouter()
-  const { recipientId: currentRecipientId } = useRecipient()
-  const canDelete = useCanDeleteRecipient()
-  const [pendingDelete, setPendingDelete] = useState<Recipient | null>(null)
+
+  // A push token belongs to one browser, so only the person viewing their own
+  // profile can register this device. The owner override doesn't apply here.
+  const isOwnProfile = recipient.id === currentRecipientId
 
   function handleDeleted() {
     if (recipient.id === currentRecipientId) {
@@ -68,32 +84,34 @@ export function RecipientOverview({ recipient }: { recipient: Recipient }) {
             Basic Info
           </h3>
 
-          {canEdit(recipient) && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={() => {
-                setEditSession((s) => s + 1)
-                setEditOpen(true)
-              }}
-            >
-              <Pencil className="h-3.5 w-3.5" />
-              Edit
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {canEdit(recipient) && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => {
+                  setEditSession((s) => s + 1)
+                  setEditOpen(true)
+                }}
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                Edit
+              </Button>
+            )}
 
-          {canDelete(recipient) && (
-            <Button
-              variant="destructive"
-              size="sm"
-              className="gap-2"
-              onClick={() => setPendingDelete(recipient)}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              Delete
-            </Button>
-          )}
+            {canDelete(recipient) && (
+              <Button
+                variant="destructive"
+                size="sm"
+                className="gap-2"
+                onClick={() => setPendingDelete(recipient)}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Delete
+              </Button>
+            )}
+          </div>
         </div>
 
         <dl className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -130,8 +148,36 @@ export function RecipientOverview({ recipient }: { recipient: Recipient }) {
           <div className="flex items-center gap-2">
             <Bell className="h-4 w-4 shrink-0 text-primary" />
             <div>
-              <dt className="text-xs text-muted-foreground">Push</dt>
-              <dd className="text-sm text-foreground">Not registered</dd>
+             <dt className="text-xs text-muted-foreground">Push</dt>
+<dd className="text-sm text-foreground">
+  {recipient.hasPushToken ? 'Registered' : 'Not registered'}
+</dd>
+
+{isOwnProfile && (
+  <Button
+    variant="outline"
+    size="sm"
+    disabled={pushPending || disablePending}
+    onClick={() =>
+      recipient.hasPushToken ? disablePush() : enablePush()
+    }
+    className="mt-2"
+  >
+    {pushPending
+      ? 'Enabling...'
+      : disablePending
+        ? 'Disabling...'
+        : recipient.hasPushToken
+          ? 'Disable Notifications'
+          : 'Enable  Notifications'}
+  </Button>
+)}
+
+{(pushError || disableError) && (
+  <p className="mt-2 max-w-xs text-xs text-destructive">
+    {(pushError ?? disableError)?.message}
+  </p>
+)}
             </div>
           </div>
         </dl>
